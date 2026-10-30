@@ -1,0 +1,26 @@
+{
+  "offlineFileProtocol": true,
+  "example": true,
+  "allExports": [
+    "下载报告 Markdown",
+    "下载可打印 HTML",
+    "下载结果 CSV",
+    "下载 剧情数据.json",
+    "下载 灯塔来信-游戏.html"
+  ],
+  "backupRoundtrip": true,
+  "csvImport": true,
+  "mobile390NoPageOverflow": true,
+  "browserErrors": 0,
+  "product": "branch-game",
+  "interfaceVersion": "1.0.2",
+  "nodeTests": 4,
+  "nodeTestsPassed": true,
+  "standaloneLocalAssets": true,
+  "syntaxPassed": true,
+  "mitLicense": true,
+  "extractedZipUnitTests": true,
+  "extractedZipOfflineBrowser": true,
+  "interfaceTestedAt": "2026-10-28T17:54:20.497Z",
+  "businessCodeUnchanged": true
+}

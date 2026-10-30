@@ -1,0 +1,43 @@
+{
+  "_files": {},
+  "title": "灯塔来信",
+  "start": "start",
+  "vars": "key=0",
+  "nodes": [
+    {
+      "id": "start",
+      "text": "海边有一把钥匙，远处灯塔的门锁着。"
+    },
+    {
+      "id": "key",
+      "text": "你捡起了钥匙。"
+    },
+    {
+      "id": "end",
+      "text": "灯塔的门打开了，你找到了来信。故事结束。"
+    }
+  ],
+  "links": [
+    {
+      "from": "start",
+      "label": "捡起钥匙",
+      "to": "key",
+      "condition": "",
+      "effect": "key+=1"
+    },
+    {
+      "from": "start",
+      "label": "打开灯塔",
+      "to": "end",
+      "condition": "key>=1",
+      "effect": ""
+    },
+    {
+      "from": "key",
+      "label": "返回海边",
+      "to": "start",
+      "condition": "",
+      "effect": ""
+    }
+  ]
+}

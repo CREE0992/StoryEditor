@@ -1,6 +1,3 @@
-[README.md](https://github.com/user-attachments/files/34160600/README.md)
-# StoryEditor
-浙创OPC创业社区-互动剧情编辑器，编排剧情节点、条件和选项，校验连接并导出可试玩的网页游戏
 # 互动剧情编辑器
 
 编排剧情节点、条件和选项，校验连接并导出可试玩的网页游戏。

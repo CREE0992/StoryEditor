@@ -1,0 +1,12 @@
+✔ 核心结果与业务边界 (0.705875ms)
+✔ 无效输入被明确拒绝 (0.182458ms)
+✔ CSV往返与表格公式隔离 (0.1865ms)
+✔ ZIP校验和与真实日期验证 (0.590084ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 33.789875

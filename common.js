@@ -1,0 +1,23 @@
+/* Shared, dependency-free primitives. MIT licensed. */
+const clone = x => JSON.parse(JSON.stringify(x));
+const esc = x => String(x ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num = (v,label='数值',min=0) => { if(v===''||v==null||!Number.isFinite(Number(v))||Number(v)<min) throw Error(label+'必须是大于或等于 '+min+' 的有效数字'); return Number(v); };
+const money = n => Number(n).toFixed(2);
+const lines = v => String(v||'').split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+const choices = v => String(v||'').split(/[,，\n|]/).map(s=>s.trim()).filter(Boolean);
+const required = (v,label) => {if(!String(v??'').trim()) throw Error('请填写'+label); return String(v).trim();};
+const tableRows = (d,k='items') => {const a=d[k];if(!Array.isArray(a)||!a.length)throw Error('请至少添加一行数据');return a;};
+const metric = (label,value) => ({label,value});
+const note = (title,text) => ({title,text:String(text)});
+const safeName = (s,fallback='文件') => String(s||fallback).replace(/[\\/:*?"<>|\x00-\x1f]/g,'_').replace(/^\.+/,'_').slice(0,160)||fallback;
+const csv = (cols,rows) => '\ufeff'+[cols,...rows].map(row=>row.map(v=>{let s=String(v??'');if(typeof v!=='number'&&/^[\s]*[=+\-@]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';}).join(',')).join('\r\n');
+function parseCSV(text){text=String(text).replace(/^\ufeff/,'');let rows=[],row=[],v='',quoted=false;for(let i=0;i<text.length;i++){const c=text[i];if(c==='"'){if(quoted&&text[i+1]==='"'){v+='"';i++;}else if(!quoted&&v.length)throw Error('CSV引号位置错误');else quoted=!quoted;}else if(c===','&&!quoted){row.push(v);v='';}else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&text[i+1]==='\n')i++;row.push(v);rows.push(row);row=[];v='';}else v+=c;}if(quoted)throw Error('CSV有未闭合的引号');if(v||row.length){row.push(v);rows.push(row);}return rows.filter(r=>r.some(c=>c!==''));}
+const day = s => {if(!/^\d{4}-\d{2}-\d{2}$/.test(s||''))throw Error('日期请使用 YYYY-MM-DD');const t=Date.parse(s+'T00:00:00Z');if(!Number.isFinite(t)||new Date(t).toISOString().slice(0,10)!==s)throw Error('日期不存在：'+s);return t;};
+const today = () => {const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+const unique = a => [...new Set(a)];
+function replaceTokens(t,values){return String(t).replace(/\{([^{}]+)\}/g,(m,k)=>Object.hasOwn(values,k)?String(values[k]):m);}
+function documentHTML(title,body){return '<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+'</title><style>body{font:16px/1.7 system-ui,sans-serif;color:#18352f;background:#f6f8f5;max-width:1050px;margin:32px auto;padding:24px}h1{font-size:30px}section,article{background:white;padding:24px;border:1px solid #dce5df;border-radius:14px;margin:18px 0}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #dce5df;padding:10px;text-align:left;white-space:pre-wrap}pre{white-space:pre-wrap;overflow-wrap:anywhere}button,input,textarea,select{font:inherit;padding:10px;margin:8px 4px;max-width:95%}img{max-width:100%;height:auto}button{cursor:pointer}small{color:#64766e}@media print{button{display:none}body{margin:0;padding:0;background:white}}</style><h1>'+esc(title)+'</h1>'+body+'</html>';}
+function crc32(bytes){let c=0xffffffff;for(const b of bytes){c^=b;for(let k=0;k<8;k++)c=(c>>>1)^((c&1)?0xedb88320:0);}return (c^0xffffffff)>>>0;}
+function zipBytes(files){const enc=new TextEncoder(),parts=[],central=[];let offset=0,size=0;const hdr=(n)=>new Uint8Array(n),set=(a,p,v,n)=>{const dv=new DataView(a.buffer);n===2?dv.setUint16(p,v,true):dv.setUint32(p,v,true);};for(const f of files){const name=enc.encode(f.name),data=typeof f.data==='string'?enc.encode(f.data):f.data,crc=crc32(data),h=hdr(30);set(h,0,0x04034b50,4);set(h,4,20,2);set(h,6,0x800,2);set(h,14,crc,4);set(h,18,data.length,4);set(h,22,data.length,4);set(h,26,name.length,2);parts.push(h,name,data);const c=hdr(46);set(c,0,0x02014b50,4);set(c,4,20,2);set(c,6,20,2);set(c,8,0x800,2);set(c,16,crc,4);set(c,20,data.length,4);set(c,24,data.length,4);set(c,28,name.length,2);set(c,42,offset,4);central.push(c,name);size+=46+name.length;offset+=30+name.length+data.length;}const end=hdr(22);set(end,0,0x06054b50,4);set(end,8,files.length,2);set(end,10,files.length,2);set(end,12,size,4);set(end,16,offset,4);return new Blob([...parts,...central,end],{type:'application/zip'});}
+globalThis.OPC={clone,esc,num,money,lines,choices,required,tableRows,metric,note,safeName,csv,parseCSV,day,today,unique,replaceTokens,documentHTML,crc32,zipBytes};
+if(typeof module!=='undefined')module.exports=globalThis.OPC;
